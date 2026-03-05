@@ -606,7 +606,6 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
-
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -692,7 +691,7 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = { 'ruff_format', 'ruff_organize_imports' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
@@ -840,7 +839,6 @@ require('lazy').setup({
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
@@ -919,6 +917,23 @@ require('lazy').setup({
     end,
   },
 
+  -- CSV viewer with syntax highlighting
+  {
+    'mechatroner/rainbow_csv',
+    ft = { 'csv', 'tsv' }, -- Only loads for CSV/TSV files
+    config = function()
+      vim.g.rainbow_csv_delim = ',' -- Default delimiter
+      -- Optional: set custom colors
+      vim.g.rcsv_colorpairs = {
+        { 'red', 'red' },
+        { 'blue', 'blue' },
+        { 'green', 'green' },
+        { 'magenta', 'magenta' },
+        { 'cyan', 'cyan' },
+      }
+    end,
+  },
+
   -- Git Integration
   {
     'lewis6991/gitsigns.nvim',
@@ -986,18 +1001,6 @@ require('lazy').setup({
     opts = {},
     lazy = false,
   },
-
-  -- Show available keybindings
-  {
-    'folke/which-key.nvim',
-    event = 'VeryLazy',
-    init = function()
-      vim.o.timeout = true
-      vim.o.timeoutlen = 300
-    end,
-    opts = {},
-  },
-
   -- Better diagnostics list
   {
     'folke/trouble.nvim',
