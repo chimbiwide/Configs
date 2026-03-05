@@ -135,6 +135,7 @@ alias nv='nvim'
 #some quick edit configs
 alias nvimrc='nvim ~/.config/nvim/init.lua'
 alias bashrc='nvim ~/.bashrc'
+alias kittyrc='nvim ~/.config/kitty/kitty.conf'
 
 #auto-activate python venv when entering project directory
 cd() {
@@ -150,3 +151,6 @@ cd() {
 	source .venv/bin/activate
     fi
 }
+
+# opencode
+export PATH=/home/david/.opencode/bin:$PATH
