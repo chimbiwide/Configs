@@ -4,13 +4,7 @@
 
 Includes my notes and solutions to the exercises.
 
-This mosly serves as a documentations for myself(my neovim configurations).
-
-Two config files:
-1. `init.lua` -- my neovim config
-2. `bashrc` -- my terminal bash config
-
-the bashrc includes some QoL features such as auto activating python venvs when cding into a directory.
+Also has config files for neovim, bash and kitty
 
 ---
 
