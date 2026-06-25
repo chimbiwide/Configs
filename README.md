@@ -8,6 +8,8 @@ OS: Linux Mint 22.3
 
 Neovim version: 0.12+
 
+nvim goes to /usr/local/bin/
+
 ---
 
 ### Dependencies
