@@ -137,6 +137,9 @@ alias nvimrc='nvim ~/.config/nvim/init.lua'
 alias bashrc='nvim ~/.bashrc'
 alias kittyrc='nvim ~/.config/kitty/kitty.conf'
 
+#alia for activating .venv
+alias venv='source .venv/bin/activate'
+
 #auto-activate python venv when entering project directory
 cd() {
     builtin cd "$@"
@@ -152,5 +155,16 @@ cd() {
     fi
 }
 
-# opencode
-export PATH=/home/david/.opencode/bin:$PATH
+#flutter 
+export PATH=/home/david/develop/flutter/bin:$PATH
+
+#nvidia tool kit 
+export PATH=${PATH}:/usr/local/cuda-13.0/bin:$PATH
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/cuda-13.0/lib64:$LD_LIBRARY_PATH
+
+# rust cargo
+. "$HOME/.cargo/env"
+
+# go lang configs
+export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:$HOME/go/bin

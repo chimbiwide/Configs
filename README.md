@@ -4,12 +4,16 @@
 
 Includes config files for bash, kitty and neovim.
 
+OS: Linux Mint 22.3
+
+Neovim version: 0.12+
+
 ---
 
-System Specifications: 
-```
-System:
-  Kernel: 6.8.0-101-generic arch: x86_64 bits: 64 compiler: gcc v: 13.3.0 clocksource: tsc
-  Desktop: Cinnamon v: 6.4.8 tk: GTK v: 3.24.41 wm: Muffin v: 6.4.1 vt: 7 dm: LightDM v: 1.30.0
-    Distro: Linux Mint 22.2 Zara base: Ubuntu 24.04 noble
-```
+### Dependencies
+
+- uv (`uv tool` for basedpyright and ruff)
+- npm
+- rust and rust_analyzer (requires additional install)
+- go
+- tree-sitter-cli (requires cargo)
