@@ -23,3 +23,4 @@ Nvim AppImage goes to /usr/local/bin/
 - rust and rust_analyzer (requires additional install)
 - go
 - tree-sitter-cli (requires cargo)
+- jdk 21

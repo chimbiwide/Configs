@@ -16,7 +16,7 @@ vim.schedule(function()
 end)
 vim.o.breakindent = true
 vim.o.undofile = true
--- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
+-- Case-insensitive searching UNLESS \C or one or more capital letters in the search termcomplete
 vim.o.ignorecase = true
 vim.o.smartcase = true
 vim.o.signcolumn = 'yes'
@@ -366,11 +366,13 @@ require('lazy').setup({
           'stylua',
           'gopls',
           'rust-analyzer',
+          'jdtls',
+          'kotlin-lsp',
         },
       }
 
       require('mason-lspconfig').setup {
-        automatic_enable = true,
+        automatic_enable = { exclude = { 'jdtls', 'kotlin_lsp' } },
       }
     end,
   },
@@ -460,6 +462,7 @@ require('lazy').setup({
 
       completion = {
         documentation = { auto_show = false, auto_show_delay_ms = 500 },
+        accept = { auto_brackets = { blocked_filetypes = { 'kotlin' } } },
       },
 
       sources = {
@@ -731,6 +734,52 @@ require('lazy').setup({
     event = 'VeryLazy',
     config = function()
       require('nvim-surround').setup()
+    end,
+  },
+
+  -- Java lsp
+  {
+    'mfussenegger/nvim-jdtls',
+    ft = 'java',
+    config = function()
+      local function start_jdtls()
+        local root_dir = vim.fs.root(0, { 'gradlew', 'mvnw', 'settings.gradle', 'settings.gradle.kts', '.git' }) or vim.uv.cwd()
+        local workspace = vim.fn.stdpath 'cache' .. '/jdtls/' .. vim.fs.basename(root_dir)
+
+        require('jdtls').start_or_attach {
+          cmd = { vim.fn.exepath 'jdtls', '-data', workspace },
+          root_dir = root_dir,
+          capabilities = require('blink.cmp').get_lsp_capabilities(),
+          settings = {},
+        }
+      end
+
+      start_jdtls()
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = 'java',
+        callback = start_jdtls,
+      })
+    end,
+  },
+
+  -- Kotlin lsp
+  {
+    'AlexandrosAlexiou/kotlin.nvim',
+    ft = 'kotlin',
+    dependencies = {
+      'mason.nvim',
+      'mason-lspconfig.nvim',
+      'stevearc/oil.nvim',
+      'folke/trouble.nvim',
+    },
+    config = function()
+      require('oil').setup()
+      require('kotlin').setup {
+        root_markers = { 'gradlew', 'settings.gradle', 'settings.gradle.kts', 'mvnw', '.git' },
+        jdk_for_symbol_resolution = '/usr/lib/jvm/java-21-openjdk-amd64',
+        inlay_hints = { enabled = true },
+        folding = { enabled = false },
+      }
     end,
   },
 
