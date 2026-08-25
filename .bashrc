@@ -1,5 +1,3 @@
-# ~/.bashrc: executed by bash(1) for non-login shells.
-
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
@@ -19,12 +17,14 @@ HISTIGNORE='ls:ll:la:l:cd:pwd:exit:clear:history'
 shopt -s checkwinsize
 shopt -s globstar
 
+# lesspipe for non-text files
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
+# color prompt
 case "$TERM" in
     xterm-color|*-256color) color_prompt=yes;;
 esac
@@ -67,6 +67,7 @@ fi
 
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
+# ls alias
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
@@ -102,8 +103,14 @@ alias nvimrc='nvim ~/.config/nvim/init.lua'
 alias bashrc='nvim ~/.bashrc'
 alias kittyrc='nvim ~/.config/kitty/kitty.conf'
 
-# alias for activating .venv
-alias venv='source .venv/bin/activate'
+#Kitten alias, very very useful
+alias diff="kitten diff" #diff 
+alias ssh="kitten ssh" # convinient ssh
+alias icat="kitten icat" # display images
+alias dnd="kitten dnd" # drag and drop
+alias download="kitten transfer" # transfer files from remote to local
+alias upload="kitten transfer --direction=upload" # upload files from local to remote
+
 
 # auto-activate .venv for the nearest project (walks up from $PWD)
 _auto_venv() {
@@ -150,10 +157,6 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/cuda-13.0/lib64:$LD_LIBRARY
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$HOME/go/bin
 
-# Pi
-export PATH="$HOME/.local/share/pi-node/node-v22.23.1-linux-x64/bin:$PATH"
-
-# >>> grok installer >>>
+# Grok Build CLI 
 export PATH="$HOME/.grok/bin:$PATH"
 [[ -r "$HOME/.grok/completions/bash/grok.bash" ]] && source "$HOME/.grok/completions/bash/grok.bash"
-# <<< grok installer <<<
