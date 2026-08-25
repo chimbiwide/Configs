@@ -8,7 +8,7 @@ Includes config files for bash, kitty and neovim.
 
 OS: Linux Mint 22.3
 
-Neovim version: 0.12+
+Neovim version: 0.12.5
 
 Kitty Version: 0.48.2
 

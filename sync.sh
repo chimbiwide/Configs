@@ -7,7 +7,7 @@ source ~/.bashrc
 echo "bash synced"
 
 # Kitty
-cp -r ./kitty/ ~/.config/kitty/
+cp -r ./kitty/ ~/.config/
 if pgrep -x kitty >/dev/null; then
     pkill -USR1 -x kitty
     echo "kitty synced"
