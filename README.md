@@ -19,7 +19,7 @@ Nvim AppImage goes to /usr/local/bin/
 ### Dependencies
 
 - uv (`uv tool` for basedpyright and ruff)
-- npm
+- npm/node
 - rust and rust_analyzer (requires additional install)
 - go
 - tree-sitter-cli (requires cargo)

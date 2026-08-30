@@ -830,7 +830,7 @@ require('lazy').setup({
     config = function()
       local harpoon = require 'harpoon'
       harpoon:setup()
-      vim.keymap.set('n', '<leader>A', function()
+      vim.keymap.set('n', '<leader>a', function()
         harpoon:list():add()
       end, { desc = 'Harpoon add file' })
       vim.keymap.set('n', '<leader>H', function()
