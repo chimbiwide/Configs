@@ -349,6 +349,19 @@ require('lazy').setup({
             },
           },
         },
+        harper_ls = {
+          filetypes = { 'markdown', 'text', 'gitcommit' },
+          settings = {
+            ['harper-ls'] = {
+              userDictPath = '',
+              linters = {
+                spell_check = true,
+                spelled_numbers = false,
+                linking_verbs = true,
+              },
+            },
+          },
+        },
       }
       for server_name, config in pairs(server_configs) do
         vim.lsp.config(server_name, config)
@@ -367,6 +380,7 @@ require('lazy').setup({
           'jdtls',
           'kotlin-lsp',
           'pico8-ls',
+          'harper-ls',
         },
       }
 
