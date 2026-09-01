@@ -262,9 +262,6 @@ require('lazy').setup({
           map('grt', require('telescope.builtin').lsp_type_definitions, '[G]oto [T]ype Definition')
 
           local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if client and client.name == 'ruff' then
-            client.server_capabilities.hoverProvider = false
-          end
           if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
@@ -332,7 +329,7 @@ require('lazy').setup({
       -- Per-server configuration via vim.lsp.config().
       -- only list the ones that requires custom settings
       local server_configs = {
-        -- clangd and pyright have no extra settings, so they don't need to appear here.
+        -- clangd has no extra settings, so it doesn't need to appear here.
         lua_ls = {
           settings = {
             Lua = {
@@ -346,8 +343,9 @@ require('lazy').setup({
         basedpyright = {
           settings = {
             basedpyright = {
-              analysis = { typeCheckingMode = 'standard' },
+              -- Import organization is handled by conform/ruff, not the type checker.
               disableOrganizeImports = true,
+              analysis = { typeCheckingMode = 'standard' },
             },
           },
         },
@@ -355,8 +353,8 @@ require('lazy').setup({
       for server_name, config in pairs(server_configs) do
         vim.lsp.config(server_name, config)
       end
+      -- Ruff stays a formatter (conform), not an LSP — basedpyright owns Python diagnostics.
       vim.lsp.enable 'basedpyright'
-      vim.lsp.enable 'ruff'
 
       -- Ensure servers and tools are installed via Mason.
       require('mason-tool-installer').setup {
@@ -373,7 +371,7 @@ require('lazy').setup({
       }
 
       require('mason-lspconfig').setup {
-        automatic_enable = { exclude = { 'jdtls', 'kotlin_lsp' } },
+        automatic_enable = { exclude = { 'jdtls', 'kotlin_lsp', 'ruff' } },
       }
     end,
   },
