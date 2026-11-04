@@ -157,34 +157,22 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/cuda-13.0/lib64:$LD_LIBRARY
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:$HOME/go/bin
 
-# java
-export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
-export PATH="$JAVA_HOME/bin:$PATH"
+# java 21: Fedora (Oracle RPM) / Mint (apt openjdk-21-jdk) / Fedora (dnf openjdk)
+for _jdk in /usr/java/jdk-21 /usr/lib/jvm/java-21-openjdk-amd64 /usr/lib/jvm/java-21-openjdk; do
+  if [[ -x "$_jdk/bin/java" ]]; then
+    export JAVA_HOME="$_jdk"
+    export PATH="$JAVA_HOME/bin:$PATH"
+    break
+  fi
+done
+unset _jdk
 
 # Android SDK (FTC Gradle / adb / jdtls import)
 export ANDROID_HOME="$HOME/Android/Sdk"
 export ANDROID_SDK_ROOT="$ANDROID_HOME"
 export PATH="$ANDROID_HOME/platform-tools:$PATH"
 
-# Grok Build CLI
-export PATH="$HOME/.grok/bin:$PATH"
-[[ -r "$HOME/.grok/completions/bash/grok.bash" ]] && source "$HOME/.grok/completions/bash/grok.bash"
-
-# Resolve Grok Build and Cursor CLI both using agent
-# Grok Build uses Grok
-# Cursor CLI uses cursor
-[[ -L "$HOME/.grok/bin/agent" ]] && rm -f "$HOME/.grok/bin/agent"
-if [[ -L "$HOME/.local/bin/agent" ]]; then
-  _agent_target="$(readlink -f "$HOME/.local/bin/agent" 2>/dev/null || true)"
-  case "$_agent_target" in
-    *cursor-agent*|*grok*) rm -f "$HOME/.local/bin/agent" ;;
-  esac
-  unset _agent_target
+# machine-specific settings (not in git)
+if [[ -r ~/.bashrc.local ]]; then
+  source ~/.bashrc.local
 fi
-if [[ -x "$HOME/.local/bin/cursor-agent" ]]; then
-  if [[ ! -e "$HOME/.local/bin/cursor" || -L "$HOME/.local/bin/cursor" ]]; then
-    ln -sfn cursor-agent "$HOME/.local/bin/cursor"
-  fi
-fi
-hash -d agent 2>/dev/null || true
-alias cursor-app='/usr/bin/cursor'

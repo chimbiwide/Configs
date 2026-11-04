@@ -86,6 +86,23 @@ end
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
+-- JDK 21 for jdtls / kotlin-lsp. $JAVA_HOME (set by .bashrc) wins; the
+-- fallbacks cover nvim launched without .bashrc (e.g. from a desktop entry).
+local function java21_home()
+  local candidates = {
+    vim.env.JAVA_HOME or '', -- set by .bashrc; '' keeps ipairs from stopping on nil
+    '/usr/java/jdk-21', -- Fedora, Oracle RPM
+    '/usr/lib/jvm/java-21-openjdk-amd64', -- Mint, apt
+    '/usr/lib/jvm/java-21-openjdk', -- Fedora, dnf
+  }
+  for _, home in ipairs(candidates) do
+    if type(home) == 'string' and home ~= '' and vim.fn.executable(home .. '/bin/java') == 1 then
+      return home
+    end
+  end
+  return nil
+end
+
 --  configure installed plugins
 
 require('lazy').setup({
@@ -756,16 +773,35 @@ require('lazy').setup({
     ft = 'java',
     config = function()
       local function start_jdtls()
-        local root_dir = vim.fs.root(0, { 'gradlew', 'mvnw', 'settings.gradle', 'settings.gradle.kts' }) or vim.fs.root(0, { '.git' }) or vim.uv.cwd()
+        -- FTC Eclipse files live in TeamCode/.  Prefer that over the Gradle
+        -- root so jdtls does not fall back to the invisible non-project.
+        local gradle_root = vim.fs.root(0, { 'gradlew', 'mvnw', 'settings.gradle', 'settings.gradle.kts' })
+        local team = gradle_root and (gradle_root .. '/TeamCode') or nil
+        local buf = vim.api.nvim_buf_get_name(0)
+        local root_dir
+        if team and vim.uv.fs_stat(team .. '/build.gradle') and buf:find(team, 1, true) then
+          root_dir = team
+        else
+          root_dir = gradle_root or vim.fs.root(0, { '.git' }) or vim.uv.cwd()
+        end
         local workspace = vim.fn.stdpath 'cache' .. '/jdtls/' .. vim.fs.basename(root_dir)
 
+        local java_home = java21_home()
+        if java_home then
+          vim.env.JAVA_HOME = java_home
+        end
         -- jdtls-spawned Gradle must see the SDK even if the parent shell forgot ANDROID_HOME
         vim.env.ANDROID_HOME = vim.env.ANDROID_HOME or (vim.fn.expand '~' .. '/Android/Sdk')
         vim.env.ANDROID_SDK_ROOT = vim.env.ANDROID_HOME
 
+        local jdtls_bin = vim.fn.exepath 'jdtls'
+        if jdtls_bin == '' then
+          jdtls_bin = vim.fn.stdpath 'data' .. '/mason/bin/jdtls'
+        end
+
         local jdtls = require 'jdtls'
         jdtls.start_or_attach {
-          cmd = { vim.fn.exepath 'jdtls', '-data', workspace },
+          cmd = { jdtls_bin, '--jvm-arg=-Xmx2G', '-data', workspace },
           root_dir = root_dir,
           capabilities = require('blink.cmp').get_lsp_capabilities(),
           settings = {
@@ -795,8 +831,9 @@ require('lazy').setup({
         }
       end
 
-      -- just in case the first java file that opens does not gets a jdtls
-      -- start_jdtls()
+      -- Lazy loads this plugin on FileType=java, so the autocmd below misses
+      -- the buffer that triggered the load. start_or_attach is idempotent.
+      start_jdtls()
       vim.api.nvim_create_autocmd('FileType', {
         pattern = 'java',
         callback = start_jdtls,
@@ -818,7 +855,7 @@ require('lazy').setup({
       require('oil').setup()
       require('kotlin').setup {
         root_markers = { 'gradlew', 'settings.gradle', 'settings.gradle.kts', 'mvnw' },
-        jdk_for_symbol_resolution = '/usr/lib/jvm/java-21-openjdk-amd64',
+        jdk_for_symbol_resolution = java21_home() or '/usr/java/jdk-21',
         inlay_hints = { enabled = true },
         folding = { enabled = false },
       }
